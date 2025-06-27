@@ -15,11 +15,6 @@
   <meta name="twitter:title" content="s-toolkit: Tools by Tech Visionary">
   <meta name="twitter:description" content="Explore a powerful collection of tools for AI, editing, gaming, and more, crafted by Sujan Rai and the Tech Visionary team.">
   <title>s-toolkit: Tools</title>
-  <!-- React and Dependencies -->
-<script defer src="../scripts/navigation.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.6/babel.min.js"></script>
   <!-- Vue.js for Additional Interactivity -->
   <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.prod.js"></script>
   <!-- Tailwind CSS for Styling -->
@@ -31,12 +26,10 @@
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script defer src="../scripts/navigation.js"></script>
   <style>
     body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-    .tool-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .tool-card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
     .category-section { background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 12px; }
-    .modal { backdrop-filter: blur(5px); }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -55,9 +48,6 @@
       <section class="category-section p-8" data-aos="fade-up">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Easy Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Simplify your daily tasks with intuitive, user-friendly tools designed for everyone.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="easy-tools">
-          <!-- React components will populate here -->
-        </div>
         <a href="easytools.html" class="text-blue-600 hover:underline text-lg">Explore Easy Tools</a>
       </section>
 
@@ -65,244 +55,87 @@
       <section class="category-section p-8" data-aos="fade-right">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">AI Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Providing a free collection of powerful AI tools for everyday tasks and advanced automation.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="ai-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#ai-tools" class="text-blue-600 hover:underline text-lg">Explore AI Tools</a>
+        <a href="aitools.html" class="text-blue-600 hover:underline text-lg">Explore AI Tools</a>
       </section>
 
       <!-- Editing Tools -->
       <section class="category-section p-8" data-aos="fade-left">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Editing Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Edit and enhance your content with precision using our advanced editing solutions.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="editing-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#editing-tools" class="text-blue-600 hover:underline text-lg">Explore Editing Tools</a>
+        <a href="editingtools.html" class="text-blue-600 hover:underline text-lg">Explore Editing Tools</a>
       </section>
 
       <!-- Image Tools -->
       <section class="category-section p-8" data-aos="fade-up">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Image Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Create, edit, and optimize stunning visuals with our cutting-edge image tools.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="image-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#image-tools" class="text-blue-600 hover:underline text-lg">Explore Image Tools</a>
+        <a href="imagetools.html" class="text-blue-600 hover:underline text-lg">Explore Image Tools</a>
       </section>
 
       <!-- Video Tools -->
       <section class="category-section p-8" data-aos="fade-right">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Video Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Craft professional-grade videos with our versatile video editing and processing tools.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="video-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#video-tools" class="text-blue-600 hover:underline text-lg">Explore Video Tools</a>
+        <a href="videotools.html" class="text-blue-600 hover:underline text-lg">Explore Video Tools</a>
       </section>
 
       <!-- Audio Tools -->
       <section class="category-section p-8" data-aos="fade-left">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Audio Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Record, edit, and enhance audio with our high-quality audio processing tools.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="audio-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#audio-tools" class="text-blue-600 hover:underline text-lg">Explore Audio Tools</a>
+        <a href="audiotools.html" class="text-blue-600 hover:underline text-lg">Explore Audio Tools</a>
       </section>
 
       <!-- Document Tools -->
       <section class="category-section p-8" data-aos="fade-up">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Document Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Streamline document creation, editing, and collaboration with our robust document tools.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="document-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#document-tools" class="text-blue-600 hover:underline text-lg">Explore Document Tools</a>
+        <a href="documenttools.html" class="text-blue-600 hover:underline text-lg">Explore Document Tools</a>
       </section>
 
       <!-- Gaming Tools -->
       <section class="category-section p-8" data-aos="fade-right">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Gaming Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Enhance your gaming experience with tools designed for performance and immersion.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="gaming-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#gaming-tools" class="text-blue-600 hover:underline text-lg">Explore Gaming Tools</a>
+        <a href="gamingtools.html" class="text-blue-600 hover:underline text-lg">Explore Gaming Tools</a>
       </section>
 
       <!-- Daily Tools -->
       <section class="category-section p-8" data-aos="fade-left">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Daily Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Boost productivity with tools tailored for everyday personal and professional tasks.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="daily-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#daily-tools" class="text-blue-600 hover:underline text-lg">Explore Daily Tools</a>
+        <a href="dailytools.html" class="text-blue-600 hover:underline text-lg">Explore Daily Tools</a>
       </section>
 
       <!-- Programming Tools -->
       <section class="category-section p-8" data-aos="fade-up">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Programming Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Empower developers with tools for coding, debugging, and project management.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="programming-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#programming-tools" class="text-blue-600 hover:underline text-lg">Explore Programming Tools</a>
+        <a href="programmingtools.html" class="text-blue-600 hover:underline text-lg">Explore Programming Tools</a>
       </section>
 
       <!-- Developer Tools -->
       <section class="category-section p-8" data-aos="fade-right">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Developer Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Advanced utilities for developers to build, test, and deploy applications efficiently.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="developer-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#developer-tools" class="text-blue-600 hover:underline text-lg">Explore Developer Tools</a>
+        <a href="developertools.html" class="text-blue-600 hover:underline text-lg">Explore Developer Tools</a>
       </section>
 
       <!-- Global Tools -->
       <section class="category-section p-8" data-aos="fade-left">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Global Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Connect and collaborate worldwide with our globally accessible tools.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="global-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#global-tools" class="text-blue-600 hover:underline text-lg">Explore Global Tools</a>
+        <a href="globaltools.html" class="text-blue-600 hover:underline text-lg">Explore Global Tools</a>
       </section>
 
       <!-- Accessible Tools -->
       <section class="category-section p-8" data-aos="fade-up">
         <h2 class="text-3xl font-semibold text-blue-800 mb-4">Accessible Tools</h2>
         <p class="text-lg text-gray-600 mb-6">Inclusive tools designed to ensure accessibility for users of all abilities.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="accessible-tools">
-          <!-- React components will populate here -->
-        </div>
-        <a href="#accessible-tools" class="text-blue-600 hover:underline text-lg">Explore Accessible Tools</a>
+        <a href="accessibletools.html" class="text-blue-600 hover:underline text-lg">Explore Accessible Tools</a>
       </section>
     </section>
   </main>
-
-  <!-- React and Vue Integration -->
-  <script type="text/babel">
-    const { useState } = React;
-
-    const ToolCard = ({ tool, setActiveTool }) => {
-      return (
-        <div
-          className="tool-card bg-white p-6 rounded-lg shadow-lg cursor-pointer"
-          onClick={() => setActiveTool(tool)}
-          data-aos="zoom-in"
-        >
-          <h3 className="text-xl font-bold mb-3">{tool.title}</h3>
-          <p className="text-gray-600">{tool.description}</p>
-        </div>
-      );
-    };
-
-    const ToolCategory = ({ category, tools, id }) => {
-      const [activeTool, setActiveTool] = useState(null);
-
-      return (
-        <div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {tools.map(tool => (
-              <ToolCard key={tool.id} tool={tool} setActiveTool={setActiveTool} />
-            ))}
-          </div>
-          {activeTool && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 modal flex items-center justify-center">
-              <div className="bg-white p-8 rounded-lg max-w-lg">
-                <h3 className="text-2xl font-bold mb-4">{activeTool.title}</h3>
-                <p className="text-gray-600 mb-4">{activeTool.description}</p>
-                <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                  onClick={() => setActiveTool(null)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    };
-
-    const toolsData = {
-      'easy-tools': [
-        { id: 1, title: "Task Scheduler", description: "Organize your daily tasks with an intuitive scheduler." },
-        { id: 2, title: "Quick Notes", description: "Capture ideas instantly with our simple note-taking tool." },
-        { id: 3, title: "Reminder Pro", description: "Set reminders for all your important events." },
-      ],
-      'ai-tools': [
-        { id: 1, title: "AI Text Generator", description: "Generate creative text with advanced AI algorithms." },
-        { id: 2, title: "Smart Assistant", description: "Automate tasks with an AI-powered virtual assistant." },
-        { id: 3, title: "Predictive Analytics", description: "Forecast trends with AI-driven data analysis." },
-      ],
-      'editing-tools': [
-        { id: 1, title: "Text Editor Pro", description: "Edit documents with real-time collaboration features." },
-        { id: 2, title: "Code Formatter", description: "Beautify and format code for better readability." },
-        { id: 3, title: "Markdown Editor", description: "Create and edit markdown files with ease." },
-      ],
-      'image-tools': [
-        { id: 1, title: "Image Enhancer", description: "Improve image quality with AI-driven enhancements." },
-        { id: 2, title: "Photo Editor", description: "Edit photos with professional-grade tools." },
-        { id: 3, title: "Image Compressor", description: "Reduce image file sizes without losing quality." },
-      ],
-      'video-tools': [
-        { id: 1, title: "Video Editor", description: "Create stunning videos with intuitive editing tools." },
-        { id: 2, title: "Video Compressor", description: "Optimize video files for faster sharing." },
-        { id: 3, title: "Subtitle Generator", description: "Add accurate subtitles with AI-powered tools." },
-      ],
-      'audio-tools': [
-        { id: 1, title: "Audio Editor", description: "Edit and enhance audio tracks with precision." },
-        { id: 2, title: "Noise Reducer", description: "Remove background noise from audio files." },
-        { id: 3, title: "Voice Recorder", description: "Record high-quality audio on the go." },
-      ],
-      'document-tools': [
-        { id: 1, title: "PDF Editor", description: "Edit and annotate PDF documents seamlessly." },
-        { id: 2, title: "Document Converter", description: "Convert files between multiple formats." },
-        { id: 3, title: "Collaborative Docs", description: "Work together on documents in real-time." },
-      ],
-      'gaming-tools': [
-        { id: 1, title: "Game Optimizer", description: "Boost gaming performance with system tweaks." },
-        { id: 2, title: "Latency Reducer", description: "Minimize lag for smoother online gaming." },
-        { id: 3, title: "Mod Manager", description: "Manage game mods with ease." },
-      ],
-      'daily-tools': [
-        { id: 1, title: "Budget Tracker", description: "Manage your finances with ease." },
-        { id: 2, title: "Habit Builder", description: "Track and build daily habits effectively." },
-        { id: 3, title: "Time Manager", description: "Plan your day with smart time management tools." },
-      ],
-      'programming-tools': [
-        { id: 1, title: "Code IDE", description: "Write and test code in an integrated environment." },
-        { id: 2, title: "Syntax Highlighter", description: "Highlight code for multiple languages." },
-        { id: 3, title: "Version Control", description: "Manage code versions with ease." },
-      ],
-      'developer-tools': [
-        { id: 1, title: "API Tester", description: "Test and debug APIs quickly and efficiently." },
-        { id: 2, title: "Database Manager", description: "Manage databases with a powerful interface." },
-        { id: 3, title: "CI/CD Toolkit", description: "Streamline deployment with CI/CD tools." },
-      ],
-      'global-tools': [
-        { id: 1, title: "Language Translator", description: "Translate text across multiple languages." },
-        { id: 2, title: "Currency Converter", description: "Convert currencies in real-time." },
-        { id: 3, title: "Global Timezone", description: "Track time across different time zones." },
-      ],
-      'accessible-tools': [
-        { id: 1, title: "Screen Reader", description: "Enhance accessibility with text-to-speech tools." },
-        { id: 2, title: "High Contrast Mode", description: "Improve visibility for low-vision users." },
-        { id: 3, title: "Keyboard Navigation", description: "Navigate tools using keyboard shortcuts." },
-      ],
-    };
-
-    Object.keys(toolsData).forEach(category => {
-      ReactDOM.render(
-        <ToolCategory category={category} tools={toolsData[category]} id={category} />,
-        document.getElementById(category)
-      );
-    });
-  </script>
 
   <script>
     // Vue.js for Interactive Elements
@@ -328,6 +161,6 @@
       duration: 1000,
       once: true,
     });
-</script>
+  </script>
 </body>
 </html>
