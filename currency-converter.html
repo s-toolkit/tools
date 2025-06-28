@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Currency Converter: s-toolkit</title>
+<script defer src="../scripts/navigation.js"></script>
+  <style>
+    /* Base styles with professional and accessible design */
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 16px;
+      background-color: #f5f7fa;
+      color: #2d3748;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    #app {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 24px;
+      color: #1a202c;
+    }
+    .converter {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2d3748;
+    }
+    input[type="number"],
+    select {
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 16px;
+      background-color: #f7fafc;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #3182ce;
+      box-shadow: 0 0 5px rgba(49, 130, 206, 0.3);
+    }
+    button {
+      padding: 12px;
+      background-color: #3182ce;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover,
+    button:focus {
+      background-color: #2b6cb0;
+      outline: none;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      color: #2d3748;
+    }
+    /* Responsive design for smaller screens */
+    @media (max-width: 600px) {
+      #app {
+        padding: 20px;
+        margin: 20px;
+      }
+      h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>Global Currency Exchange</h1>
+    <div class="converter">
+      <!-- Amount input -->
+      <div class="input-group">
+        <label for="amount">Transaction Amount</label>
+        <input type="number" id="amount" aria-label="Enter transaction amount" aria-required="true" placeholder="Enter amount" min="0" step="any">
+      </div>
+      <!-- Source currency dropdown -->
+      <div class="input-group">
+        <label for="fromCurrency">Source Currency</label>
+        <select id="fromCurrency" aria-label="Select source currency" aria-required="true">
+          <!-- Options populated dynamically -->
+        </select>
+      </div>
+      <!-- Target currency dropdown -->
+      <div class="input-group">
+        <label for="toCurrency">Target Currency</label>
+        <select id="toCurrency" aria-label="Select target currency" aria-required="true">
+          <!-- Options populated dynamically -->
+        </select>
+      </div>
+      <!-- Convert button -->
+      <button id="convertBtn">Execute Conversion</button>
+      <!-- Result display -->
+      <div id="result" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize on DOM load
+    document.addEventListener("DOMContentLoaded", function() {
+      const amountInput = document.getElementById("amount");
+      const fromCurrency = document.getElementById("fromCurrency");
+      const toCurrency = document.getElementById("toCurrency");
+      const convertBtn = document.getElementById("convertBtn");
+      const resultDiv = document.getElementById("result");
+
+      // Currency name mapping for professional display
+      const currencyNames = {
+        USD: "United States Dollar (USD)",
+        EUR: "Euro (EUR)",
+        NPR: "Nepali Rupee (NPR)",
+        BDT: "Bangladeshi Taka (BDT)",
+        GBP: "British Pound (GBP)",
+        JPY: "Japanese Yen (JPY)",
+        AUD: "Australian Dollar (AUD)",
+        CAD: "Canadian Dollar (CAD)",
+        INR: "Indian Rupee (INR)",
+        CNY: "Chinese Yuan (CNY)"
+        // Add more currencies as needed
+      };
+
+      // Populate dropdowns with formatted currency names
+      function populateCurrencies(currencies) {
+        currencies.forEach(currency => {
+          const optionFrom = document.createElement("option");
+          optionFrom.value = currency;
+          optionFrom.textContent = currencyNames[currency] || currency;
+          fromCurrency.appendChild(optionFrom);
+
+          const optionTo = document.createElement("option");
+          optionTo.value = currency;
+          optionTo.textContent = currencyNames[currency] || currency;
+          toCurrency.appendChild(optionTo);
+        });
+        // Set default selections
+        fromCurrency.value = "USD";
+        toCurrency.value = "NPR";
+      }
+
+      // Fetch currency list from API
+      fetch("https://api.exchangerate-api.com/v4/latest/USD")
+        .then(response => response.json())
+        .then(data => {
+          let currencies = Object.keys(data.rates);
+          // Ensure Nepali Rupee (NPR) and Bangladeshi Taka (BDT) are included
+          if (!currencies.includes("NPR")) currencies.push("NPR");
+          if (!currencies.includes("BDT")) currencies.push("BDT");
+          currencies.sort();
+          populateCurrencies(currencies);
+        })
+        .catch(error => {
+          console.error("Error fetching currencies:", error);
+          resultDiv.textContent = "Unable to load currency data. Please try again.";
+        });
+
+      // Handle conversion
+      convertBtn.addEventListener("click", function() {
+        const amount = parseFloat(amountInput.value);
+        const from = fromCurrency.value;
+        const to = toCurrency.value;
+
+        if (isNaN(amount) || amount < 0) {
+          resultDiv.textContent = "Please enter a valid transaction amount.";
+          return;
+        }
+
+        // Fetch conversion rate
+        fetch(`https://api.exchangerate-api.com/v4/latest/${from}`)
+          .then(response => response.json())
+          .then(data => {
+            const rate = data.rates[to];
+            if (rate) {
+              const converted = (amount * rate).toFixed(2);
+              resultDiv.textContent = `${amount} in ${currencyNames[from] || from} to ${currencyNames[to] || to} is equivalently ${converted}.`;
+            } else {
+              resultDiv.textContent = "Conversion rate unavailable for selected currencies.";
+            }
+          })
+          .catch(error => {
+            console.error("Error fetching conversion rate:", error);
+            resultDiv.textContent = "Error processing conversion. Please try again.";
+          });
+      });
+    });
+  </script>
+</body>
+</html> 
