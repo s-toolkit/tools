@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>S-Toolkit Free AI Music Generator</title>
+<script defer src="../scripts/navigation.js"></script>
+</head>
+<body>
+    <main class="content">
+        <div class="title">
+            <h1>S-Toolkit Free AI Music Generator</h1>
+        </div>
+        <div class="description">
+            <p>Instantly create instrumental AI-generated music tracks in your chosen genre / mood for free. Select a style below and click Generate!</p>
+        </div>
+        <form id="uploadForm">
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="genre-select" class="form-label">Genre / Style</label>
+                    <select id="genre-select">
+                        <option value="">--Please choose a genre--</option>
+                        <option value="edm">EDM</option>
+                        <option value="deep-house">Deep House</option>
+                        <option value="techno">Techno</option>
+                        <option value="trap">Trap</option>
+                        <option value="dark-trap">Dark Trap</option>
+                        <option value="hip-hop">Hip Hop</option>
+                        <option value="lo-fi-hip-hop">Lo-Fi Hip Hop</option>
+                        <option value="boom-bap">Boom Bap</option>
+                        <option value="chillhop">Chillhop</option>
+                        <option value="ambient">Ambient</option>
+                        <option value="synthwave-retrowave">Synthwave / Retrowave</option>
+                        <option value="classic-rock">Classic Rock</option>
+                        <option value="jazz">Jazz</option>
+                        <option value="latin">Latin</option>
+                        <option value="afrobeats">Afrobeats</option>
+                        <option value="arabic">Classical Arabic</option>
+                        <option value="turkish">Turkish</option>
+                        <option value="indian">Indian</option>
+                        <option value="cinematic-score">Cinematic Score</option>
+                        <option value="epic-score-heroic">Epic Score / Heroic</option>
+                        <option value="happy-uplifting">Happy / Uplifting</option>
+                        <option value="hopeful-inspiring">Hopeful / Inspiring</option>
+                        <option value="hopeful-inspiring">Calm / Relaxing</option>
+                        <option value="dreamy-surreal">Dreamy / Surreal</option>
+                        <option value="energetic-hype-action">Energetic / Hype</option>
+                        <option value="suspense-tension">Suspense / Tension</option>
+                        <option value="dark-mysterious">Dark / Mysterious</option>
+                        <option value="emotional-sad">Emotional / Sad</option>
+                    </select>
+                </div>
+                <button type="button" id="generate-button" class="process-button">Generate & Download</button>
+                <div class="progress-area">
+                    <p id="message"></p>
+                    <p id="progress-status" style="display: none;"></p>
+                    <div id="progress-container" style="display: none;">
+                        <div id="progress-bar">0%</div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+    <script>
+        const genreSelect = document.getElementById('genre-select');
+        const generateButton = document.getElementById('generate-button');
+        const messageElement = document.getElementById('message');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressStatus = document.getElementById('progress-status');
+
+        if (genreSelect && generateButton && messageElement && progressContainer && progressBar && progressStatus) {
+            const fakeProcessingTimeMs = 30000;
+            const updateIntervalMs = 100;
+            let progressInterval = null;
+
+            generateButton.addEventListener('click', () => {
+                const selectedGenre = genreSelect.value;
+                messageElement.textContent = '';
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+                progressStatus.textContent = '';
+                progressContainer.style.display = 'none';
+                progressStatus.style.display = 'none';
+                messageElement.style.display = 'none';
+
+                if (!selectedGenre) {
+                    messageElement.textContent = 'Please select a genre first!';
+                    messageElement.style.display = 'block';
+                    return;
+                }
+
+                generateButton.disabled = true;
+                progressContainer.style.display = 'block';
+                progressStatus.style.display = 'block';
+                progressStatus.textContent = '';
+
+                let elapsedTime = 0;
+
+                progressInterval = setInterval(() => {
+                    elapsedTime += updateIntervalMs;
+                    let percentage = Math.min(100, Math.floor((elapsedTime / fakeProcessingTimeMs) * 100));
+
+                    progressBar.style.width = percentage + '%';
+                    progressBar.textContent = percentage + '%';
+
+                    if (percentage < 15) {
+                        progressStatus.textContent = 'Analyzing genre...';
+                    } else if (percentage < 35) {
+                        progressStatus.textContent = 'Composing musical elements...';
+                    } else if (percentage < 50) {
+                        progressStatus.textContent = 'adding AI magic...';
+                    } else if (percentage < 70) {
+                        progressStatus.textContent = 'finalizing music...';
+                    } else if (percentage < 80) {
+                        progressStatus.textContent = 'Rendering generated music...';
+                    } else if (percentage < 95) {
+                        progressStatus.textContent = 'Preparing Audio export...';
+                    } else {
+                        progressStatus.textContent = 'Generation complete and Starting download...';
+                    }
+
+                    if (elapsedTime >= fakeProcessingTimeMs) {
+                        clearInterval(progressInterval);
+                        progressBar.style.width = '100%';
+                        progressBar.textContent = '100%';
+                        progressStatus.textContent = '';
+
+                        setTimeout(() => {
+                            window.location.href = `https://mazmazika.com/generate.php?genre=${encodeURIComponent(selectedGenre)}`;
+
+                            setTimeout(() => {
+                                generateButton.disabled = false;
+                                if(progressContainer) progressContainer.style.display = 'none';
+                                if(progressStatus) progressStatus.style.display = 'none';
+                            }, 300);
+                        }, 100);
+                    }
+                }, updateIntervalMs);
+            });
+        } else {
+            console.error("Required elements for Music Generator (select#genre-select, button#generate-button, p#message, #progress-container, #progress-bar, #progress-status) not all found. Script not fully functional.");
+        }
+    </script>
+</body>
+</html>
