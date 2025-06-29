@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced AI Summarizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.18/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.10/clipboard.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #1a1a1a;
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .media-player {
+            width: 100%;
+            max-height: 400px;
+            margin-bottom: 20px;
+            display: none;
+            border-radius: 8px;
+        }
+        .media-preview {
+            max-width: 100%;
+            max-height: 400px;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .file-upload-btn {
+            background: #28a745;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 20px 0;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease;
+        }
+        .file-upload-btn:hover {
+            background: #218838;
+        }
+        #fileInput {
+            display: none;
+        }
+        .summary-card {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: box-shadow 0.3s ease;
+        }
+        .summary-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .summary-content {
+            white-space: pre-wrap;
+            min-height: 100px;
+            font-size: 1rem;
+            color: #333;
+        }
+        .error {
+            background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(245,247,250,1) 100%);
+            color: #d32f2f;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c2c2c;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .action-buttons {
+            margin-top: 10px;
+        }
+        .action-buttons ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .action-buttons li button {
+            background: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+        .action-buttons li button:hover {
+            background: #0056b3;
+        }
+        .action-buttons li button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .action-buttons li button.copied {
+            background: #28a745;
+        }
+        .collapsible {
+            cursor: pointer;
+            padding: 12px;
+            background: #e9ecef;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .collapsible:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .collapsible::after {
+            content: '▼';
+            transition: transform 0.3s ease;
+        }
+        .collapsible.active::after {
+            transform: rotate(180deg);
+        }
+        .collapsible-content {
+            display: none;
+            padding: 15px;
+            background: #f1f3f5;
+            border-radius: 6px;
+            margin-top: 5px;
+        }
+        .collapsible-content.active {
+            display: block;
+        }
+        .question-input, .translate-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .translate-section {
+            margin: 10px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 1.1rem;
+        }
+        iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 8px;
+        }
+        pre {
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced AI Summarizer</h1>
+        <div id="welcomeMessage" class="welcome-message">
+            Welcome to the Advanced AI Summarizer, developed by Tech Visionary! Upload any video, audio, image, document, or code to get a detailed summary.
+        </div>
+        <section class="control-buttons">
+            <button class="file-upload-btn" onclick="document.getElementById('fileInput').click()">Attach a File</button>
+            <button id="removeBtn" style="display: none;" onclick="removeMedia()">Remove File</button>
+            <input type="file" id="fileInput" accept="video/mp4,video/x-matroska,video/webm,video/avi,video/mpeg,video/ogv,audio/mpeg,audio/wav,audio/ogg,audio/flac,audio/aac,image/jpeg,image/png,image/gif,image/bmp,image/webp,image/svg+xml,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/x-python,text/html,text/css,application/javascript,text/x-java-source,text/x-c++src,text/x-csrc,application/x-httpd-php,text/x-ruby,text/x-go,application/typescript,text/jsx,text/tsx,application/json,application/xml,text/yaml,text/x-yaml,text/x-sql,text/x-shellscript,text/x-bash,text/markdown,text/x-rsrc,text/x-csharp,text/x-kotlin,text/x-swift,text/x-rustsrc,text/x-lua,text/x-perl,text/x-matlab,application/x-ipynb+json,text/x-dart,text/x-scala,text/x-haskell,text/x-vb,text/x-fsharp,text/x-elixir,text/x-erlang">
+        </section>
+        <video id="videoPlayer" class="media-player" controls></video>
+        <audio id="audioPlayer" class="media-player" controls></audio>
+        <img id="imagePreview" class="media-preview">
+        <iframe id="docPreview" class="media-preview"></iframe>
+        <pre id="codePreview" class="media-preview"></pre>
+        <button id="summarizeBtn" onclick="summarizeMedia()" disabled>Summarize Content</button>
+        <div id="loading" class="loading"></div>
+        <div id="error" class="error"></div>
+        <div id="summaries"></div>
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script>
+        // Initialize Clipboard.js
+        const clipboard = new ClipboardJS('.copy-btn');
+
+        // API Configuration (Note: Replace with your actual API key)
+        const API_KEY = 'AIzaSyCieSoy6gceulx5-cyu84YZ3QiEAc7GHdc'; // Replace with actual Gemini API key
+        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+
+        // DOM Elements
+        const DOM = {
+            fileInput: document.getElementById('fileInput'),
+            videoPlayer: document.getElementById('videoPlayer'),
+            audioPlayer: document.getElementById('audioPlayer'),
+            imagePreview: document.getElementById('imagePreview'),
+            docPreview: document.getElementById('docPreview'),
+            codePreview: document.getElementById('codePreview'),
+            summarizeBtn: document.getElementById('summarizeBtn'),
+            removeBtn: document.getElementById('removeBtn'),
+            summariesDiv: document.getElementById('summaries'),
+            errorDiv: document.getElementById('error'),
+            loadingDiv: document.getElementById('loading'),
+            toastDiv: document.getElementById('toast'),
+            welcomeMessage: document.getElementById('welcomeMessage')
+        };
+
+        let summaryCounter = 0;
+        let currentFileUrl = null;
+
+        // Supported file types
+        const supportedFiles = {
+            video: ['video/mp4', 'video/x-matroska', 'video/webm', 'video/avi', 'video/mpeg', 'video/ogv'],
+            audio: ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac', 'audio/aac'],
+            image: ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'image/svg+xml'],
+            document: ['application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+            code: ['text/x-python', 'text/html', 'text/css', 'application/javascript', 'text/x-java-source', 'text/x-c++src', 'text/x-csrc', 'application/x-httpd-php', 'text/x-ruby', 'text/x-go', 'application/typescript', 'text/jsx', 'text/tsx', 'application/json', 'application/xml', 'text/yaml', 'text/x-yaml', 'text/x-sql', 'text/x-shellscript', 'text/x-bash', 'text/markdown', 'text/x-rsrc', 'text/x-csharp', 'text/x-kotlin', 'text/x-swift', 'text/x-rustsrc', 'text/x-lua', 'text/x-perl', 'text/x-matlab', 'application/x-ipynb+json', 'text/x-dart', 'text/x-scala', 'text/x-haskell', 'text/x-vb', 'text/x-fsharp', 'text/x-elixir', 'text/x-erlang']
+        };
+
+        // File extension to MIME type mapping
+        const extensionToMime = {
+            '.py': 'text/x-python', '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',
+            '.java': 'text/x-java-source', '.cpp': 'text/x-c++src', '.c': 'text/x-csrc', '.php': 'application/x-httpd-php',
+            '.rb': 'text/x-ruby', '.go': 'text/x-go', '.ts': 'application/typescript', '.jsx': 'text/jsx',
+            '.tsx': 'text/tsx', '.json': 'application/json', '.xml': 'application/xml', '.yaml': 'text/yaml',
+            '.yml': 'text/yaml', '.sql': 'text/x-sql', '.sh': 'text/x-shellscript', '.bash': 'text/x-bash',
+            '.md': 'text/markdown', '.r': 'text/x-rsrc', '.cs': 'text/x-csharp', '.kt': 'text/x-kotlin',
+            '.swift': 'text/x-swift', '.rs': 'text/x-rustsrc', '.lua': 'text/x-lua', '.pl': 'text/x-perl',
+            '.m': 'text/x-matlab', '.ipynb': 'application/x-ipynb+json', '.dart': 'text/x-dart',
+            '.scala': 'text/x-scala', '.hs': 'text/x-haskell', '.vb': 'text/x-vb', '.fs': 'text/x-fsharp',
+            '.ex': 'text/x-elixir', '.exs': 'text/x-elixir', '.erl': 'text/x-erlang',
+            '.txt': 'text/plain', '.doc': 'application/msword', '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            '.pdf': 'application/pdf'
+        };
+
+        // File selection handler
+        DOM.fileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                showError('No file selected.');
+                return;
+            }
+
+            if (file.size > 1024 * 1024 * 100) { // 100MB limit
+                showError('File size exceeds 100MB limit.');
+                DOM.fileInput.value = '';
+                return;
+            }
+
+            resetMediaPlayers();
+            DOM.welcomeMessage.style.display = 'none';
+            DOM.removeBtn.style.display = 'inline-block';
+            DOM.summarizeBtn.disabled = false;
+
+            try {
+                if (currentFileUrl) {
+                    URL.revokeObjectURL(currentFileUrl);
+                }
+                currentFileUrl = URL.createObjectURL(file);
+                let mimeType = file.type || extensionToMime[`.${file.name.split('.').pop().toLowerCase()}`] || 'text/plain';
+
+                if (supportedFiles.video.includes(mimeType)) {
+                    DOM.videoPlayer.src = currentFileUrl;
+                    DOM.videoPlayer.style.display = 'block';
+                } else if (supportedFiles.audio.includes(mimeType)) {
+                    DOM.audioPlayer.src = currentFileUrl;
+                    DOM.audioPlayer.style.display = 'block';
+                } else if (supportedFiles.image.includes(mimeType)) {
+                    DOM.imagePreview.src = currentFileUrl;
+                    DOM.imagePreview.style.display = 'block';
+                } else if (supportedFiles.document.includes(mimeType)) {
+                    if (mimeType === 'text/plain') {
+                        const text = await file.text();
+                        DOM.codePreview.textContent = text;
+                        DOM.codePreview.style.display = 'block';
+                    } else {
+                        DOM.docPreview.src = currentFileUrl;
+                        DOM.docPreview.style.display = 'block';
+                    }
+                } else if (supportedFiles.code.includes(mimeType)) {
+                    const text = await file.text();
+                    DOM.codePreview.textContent = text;
+                    DOM.codePreview.style.display = 'block';
+                } else {
+                    showError('Unsupported file type.');
+                    DOM.fileInput.value = '';
+                    resetMediaPlayers();
+                    DOM.summarizeBtn.disabled = true;
+                    DOM.removeBtn.style.display = 'none';
+                    DOM.welcomeMessage.style.display = 'block';
+                    return;
+                }
+                clearError();
+            } catch (error) {
+                showError(`Error loading file: ${error.message}`);
+                resetMediaPlayers();
+                DOM.fileInput.value = '';
+                DOM.summarizeBtn.disabled = true;
+                DOM.removeBtn.style.display = 'none';
+                DOM.welcomeMessage.style.display = 'block';
+            }
+        });
+
+        // Remove uploaded file
+        function removeMedia() {
+            DOM.fileInput.value = '';
+            resetMediaPlayers();
+            DOM.summarizeBtn.disabled = true;
+            DOM.removeBtn.style.display = 'none';
+            DOM.welcomeMessage.style.display = 'block';
+            if (currentFileUrl) {
+                URL.revokeObjectURL(currentFileUrl);
+                currentFileUrl = null;
+            }
+            clearError();
+        }
+
+        // Reset media players
+        function resetMediaPlayers() {
+            ['videoPlayer', 'audioPlayer', 'imagePreview', 'docPreview', 'codePreview'].forEach(id => {
+                DOM[id].style.display = 'none';
+                if (DOM[id].tagName === 'PRE') {
+                    DOM[id].textContent = '';
+                } else {
+                    DOM[id].src = '';
+                }
+            });
+        }
+
+        // Summarize media content
+        async function summarizeMedia() {
+            const file = DOM.fileInput.files[0];
+            if (!file) {
+                showError('Please select a file.');
+                return;
+            }
+
+            try {
+                showLoading(true, 'Analyzing content...');
+                DOM.summarizeBtn.disabled = true;
+
+                const base64Data = await fileToBase64(file);
+                let mimeType = file.type || extensionToMime[`.${file.name.split('.').pop().toLowerCase()}`] || 'text/plain';
+
+                const prompts = {
+                    video: `Provide a comprehensive summary of the video content in markdown format, including:
+                    - **Scene-by-Scene Breakdown**: Describe each major scene with timestamps.
+                    - **Visual Elements**: Detail colors, lighting, camera angles, and key objects.
+                    - **Audio Elements**: Analyze music, dialogue, sound effects, and their impact.
+                    - **Narrative and Themes**: Identify the storyline, themes, and intended message.
+                    - **Overall Mood and Tone**: Describe the emotional and atmospheric tone.
+                    - **Text and Subtitles**: Include any visible text or subtitles.
+                    - **Estimated Duration**: Provide the approximate length.
+                    - **Contextual Insights**: Suggest the intended audience and purpose.
+                    Ensure the summary is detailed, concise, and well-structured in markdown, avoiding copyrighted content.`,
+                    audio: `Provide a comprehensive summary of the audio content in markdown format, including:
+                    - **Segment Breakdown**: Outline distinct audio segments with timings.
+                    - **Sound Types**: Describe music, dialogue, sound effects, and their roles.
+                    - **Content Analysis**: Summarize spoken content, lyrics, or key audio elements.
+                    - **Mood and Tone**: Analyze the emotional and atmospheric impact.
+                    - **Technical Aspects**: Note audio quality, clarity, and production style.
+                    - **Estimated Duration**: Provide the approximate length.
+                    - **Contextual Insights**: Suggest the intended audience and purpose.
+                    Ensure the summary is detailed, concise, and well-structured in markdown, avoiding copyrighted content.`,
+                    image: `Provide a comprehensive summary of the image content in markdown format, including:
+                    - **Main Subjects**: Identify primary objects, people, or elements.
+                    - **Visual Composition**: Describe colors, lighting, perspective, and layout.
+                    - **Context and Purpose**: Analyze the intended message or context.
+                    - **Mood and Tone**: Describe the emotional impact or atmosphere.
+                    - **Text Elements**: Include any visible text or annotations.
+                    - **Technical Aspects**: Note resolution, style, or artistic techniques.
+                    Ensure the summary is detailed, concise, and well-structured in markdown.`,
+                    document: `Provide a comprehensive summary of the document or code content in markdown format, including:
+                    - **Structure Overview**: Outline main sections, chapters, or code architecture.
+                    - **Key Content**: Summarize critical points, arguments, or functionality.
+                    - **Style and Tone**: Analyze writing style, tone, or coding conventions.
+                    - **Notable Elements**: Highlight unique formatting, syntax, or features.
+                    - **Purpose and Audience**: Identify the intended purpose and target audience.
+                    - **Technical Details**: For code, describe libraries, frameworks, or algorithms used.
+                    Ensure the summary is detailed, concise, and well-structured in markdown, avoiding copyrighted content.`
+                };
+
+                let prompt;
+                if (supportedFiles.video.includes(mimeType)) prompt = prompts.video;
+                else if (supportedFiles.audio.includes(mimeType)) prompt = prompts.audio;
+                else if (supportedFiles.image.includes(mimeType)) prompt = prompts.image;
+                else if (supportedFiles.document.includes(mimeType) || supportedFiles.code.includes(mimeType)) prompt = prompts.document;
+                else throw new Error('Unsupported file type for summarization.');
+
+                const response = await fetchAPI({
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            { inline_data: { mime_type: mimeType, data: base64Data.split(',')[1] } }
+                        ]
+                    }],
+                    generationConfig: { temperature: 0.7, maxOutputTokens: 8192, responseMimeType: 'text/plain' }
+                });
+
+                const summary = response.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!summary) throw new Error('No summary received from API.');
+
+                const summaryId = `summary-${summaryCounter++}`;
+                DOM.summariesDiv.insertAdjacentHTML('afterbegin', `
+                    <div class="summary-card" id="${summaryId}">
+                        <div class="summary-content">${marked.parse(summary)}</div>
+                        <div class="action-buttons">
+                            <ul>
+                                <li><button class="copy-btn" data-clipboard-target="#${summaryId} .summary-content">Copy Summary</button></li>
+                                <li><button onclick="downloadText('${summaryId}')">Download Summary</button></li>
+                                <li><button class="share-btn" data-title="AI Summary" data-description="${summary.slice(0, 100).replace(/"/g, '&quot;')}...">Share Summary</button></li>
+                                <li><button onclick="deleteSummary('${summaryId}')">Delete Summary</button></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>Didn't understand or want to translate the full summary?</h3>
+                            <button class="collapsible" data-target="ask-${summaryId}">Ask More</button>
+                            <div id="ask-${summaryId}" class="collapsible-content">
+                                <textarea id="ask-input-${summaryId}" class="question-input" placeholder="Ask for more details..."></textarea>
+                                <button onclick="askMore('${summaryId}')">Submit Question</button>
+                                <div id="ask-response-${summaryId}"></div>
+                            </div>
+                            <button class="collapsible" data-target="translate-${summaryId}">Translate Summary</button>
+                            <div id="translate-${summaryId}" class="collapsible-content">
+                                <div class="translate-section">
+                                    <input type="text" id="dest-lang-${summaryId}" class="translate-input" placeholder="Target Language (e.g., Spanish)">
+                                    <button onclick="translateSummary('${summaryId}')">Translate Now</button>
+                                </div>
+                                <div id="translate-response-${summaryId}"></div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+
+                // Add collapsible event listeners
+                document.querySelectorAll(`#${summaryId} .collapsible`).forEach(btn => {
+                    btn.addEventListener('click', () => toggleCollapsible(btn.dataset.target));
+                });
+
+                // Add custom share event listeners
+                document.querySelectorAll(`#${summaryId} .share-btn`).forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const title = btn.dataset.title;
+                        const description = btn.dataset.description;
+                        const url = window.location.href;
+                        shareContent(title, description, url);
+                    });
+                });
+
+                showToast('Summary generated successfully.');
+            } catch (error) {
+                showError(`Error processing file: ${error.message}`);
+            } finally {
+                DOM.summarizeBtn.disabled = false;
+                showLoading(false);
+            }
+        }
+
+        // Ask more about the summary
+        async function askMore(summaryId) {
+            const input = document.getElementById(`ask-input-${summaryId}`);
+            const responseDiv = document.getElementById(`ask-response-${summaryId}`);
+            const question = input.value.trim();
+
+            if (!question) {
+                showError('Please enter a question.');
+                return;
+            }
+
+            try {
+                showLoading(true, 'AI is answering your question...');
+                const originalSummary = document.getElementById(summaryId).querySelector('.summary-content').textContent;
+                const response = await fetchAPI({
+                    contents: [{
+                        parts: [{
+                            text: `Based on the following summary:\n\n${originalSummary}\n\nAnswer the following question in markdown format with detailed insights, structured clearly, avoiding copyrighted content:\n${question}`
+                        }]
+                    }],
+                    generationConfig: { temperature: 0.7, maxOutputTokens: 8192, responseMimeType: 'text/plain' }
+                });
+
+                const answer = response.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!answer) throw new Error('No response received from API.');
+
+                const responseId = `ask-response-content-${summaryId}`;
+                responseDiv.innerHTML = `
+                    <div id="${responseId}" class="summary-content">${marked.parse(answer)}</div>
+                    <div class="action-buttons">
+                        <ul>
+                            <li><button class="copy-btn" data-clipboard-target="#${responseId}">Copy Answer</button></li>
+                            <li><button class="share-btn" data-title="AI Answer" data-description="${answer.slice(0, 100).replace(/"/g, '&quot;')}...">Share Answer</button></li>
+                            <li><button onclick="deleteAskResponse('${responseId}')">Delete Answer</button></li>
+                        </ul>
+                    </div>
+                `;
+                input.value = '';
+                document.querySelectorAll(`#${responseId} .share-btn`).forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const title = btn.dataset.title;
+                        const description = btn.dataset.description;
+                        const url = window.location.href;
+                        shareContent(title, description, url);
+                    });
+                });
+                showToast('Question answered successfully.');
+            } catch (error) {
+                showError(`Error processing question: ${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Translate summary
+        async function translateSummary(summaryId) {
+            const destLang = document.getElementById(`dest-lang-${summaryId}`).value.trim();
+            const responseDiv = document.getElementById(`translate-response-${summaryId}`);
+
+            if (!destLang) {
+                showError('Please enter a target language.');
+                return;
+            }
+
+            try {
+                showLoading(true, 'Translating your summary...');
+                const originalSummary = document.getElementById(summaryId).querySelector('.summary-content').textContent;
+                const response = await fetchAPI({
+                    contents: [{
+                        parts: [{
+                            text: `Translate the following text to ${destLang} in markdown format, preserving structure and details without reproducing copyrighted content:\n\n${originalSummary}`
+                        }]
+                    }],
+                    generationConfig: { temperature: 0.7, maxOutputTokens: 8192, responseMimeType: 'text/plain' }
+                });
+
+                const translation = response.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!translation) throw new Error('No translation received from API.');
+
+                const translationId = `translate-response-content-${summaryId}`;
+                responseDiv.innerHTML = `
+                    <div id="${translationId}" class="summary-content">${marked.parse(translation)}</div>
+                    <div class="action-buttons">
+                        <ul>
+                            <li><button class="copy-btn" data-clipboard-target="#${translationId}">Copy Translation</button></li>
+                            <li><button class="share-btn" data-title="Translated Summary" data-description="${translation.slice(0, 100).replace(/"/g, '&quot;')}...">Share Translation</button></li>
+                            <li><button onclick="deleteTranslation('${translationId}')">Delete Translation</button></li>
+                        </ul>
+                    </div>
+                `;
+                document.querySelectorAll(`#${translationId} .share-btn`).forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const title = btn.dataset.title;
+                        const description = btn.dataset.description;
+                        const url = window.location.href;
+                        shareContent(title, description, url);
+                    });
+                });
+                showToast('Summary translated successfully.');
+            } catch (error) {
+                showError(`Error processing translation: ${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Custom share function
+        function shareContent(title, description, url) {
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: description,
+                    url: url
+                }).catch(err => {
+                    console.error('Web Share API failed:', err);
+                    fallbackShare(title, description, url);
+                });
+            } else {
+                fallbackShare(title, description, url);
+            }
+        }
+
+        function fallbackShare(title, description, url) {
+            const shareText = `${title}\n${description}\n${url}`;
+            const textarea = document.createElement('textarea');
+            textarea.value = shareText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Share link copied to clipboard!');
+            } catch (err) {
+                showError('Failed to copy share link.');
+            }
+            document.body.removeChild(textarea);
+
+            const encodedUrl = encodeURIComponent(url);
+            const encodedTitle = encodeURIComponent(title);
+            const encodedDescription = encodeURIComponent(description);
+            const shareOptions = [
+                { name: 'Twitter', url: `https://twitter.com/intent/tweet?text=${encodedTitle}%20${encodedDescription}&url=${encodedUrl}` },
+                { name: 'Facebook', url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
+                { name: 'LinkedIn', url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` },
+                { name: 'WhatsApp', url: `https://wa.me/?text=${encodedTitle}%20${encodedDescription}%20${encodedUrl}` }
+            ];
+
+            const shareWindow = window.open('', '_blank', 'width=600,height=400');
+            shareWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Share</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+                            button { margin: 10px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Share Options</h2>
+                        <p>${title}</p>
+                        <p>${description}</p>
+                        ${shareOptions.map(option => `<button onclick="window.open('${option.url}', '_blank')">${option.name}</button>`).join('')}
+                        <button onclick="window.close()">Close</button>
+                    </body>
+                </html>
+            `);
+        }
+
+        // Utility functions
+        async function fetchAPI(body) {
+            try {
+                const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || `API request failed: ${response.statusText}`);
+                }
+                return await response.json();
+            } catch (error) {
+                throw new Error(`API request failed: ${error.message}`);
+            }
+        }
+
+        function downloadText(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.querySelector('.summary-content')?.textContent || element.textContent;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${elementId}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Summary downloaded.');
+        }
+
+        function deleteSummary(summaryId) {
+            const element = document.getElementById(summaryId);
+            if (element) {
+                element.remove();
+                showToast('Summary deleted.');
+            }
+        }
+
+        function deleteAskResponse(responseId) {
+            const responseDiv = document.getElementById(responseId)?.parentElement;
+            if (responseDiv) {
+                responseDiv.innerHTML = '';
+                showToast('Answer deleted.');
+            }
+        }
+
+        function deleteTranslation(translationId) {
+            const responseDiv = document.getElementById(translationId)?.parentElement;
+            if (responseDiv) {
+                responseDiv.innerHTML = '';
+                showToast('Translation deleted.');
+            }
+        }
+
+        function toggleCollapsible(id) {
+            const content = document.getElementById(id);
+            const collapsible = content.previousElementSibling;
+            if (content && collapsible) {
+                const isActive = content.classList.toggle('active');
+                collapsible.classList.toggle('active');
+                collapsible.querySelector('.material-icons').textContent = isActive ? 'expand_less' : 'expand_more';
+            }
+        }
+
+        async function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64String = reader.result;
+                    if (base64String.length > 1024 * 1024 * 100 * 4 / 3) {
+                        reject(new Error('Encoded file exceeds 100MB limit after base64 encoding.'));
+                    } else {
+                        resolve(base64String);
+                    }
+                };
+                reader.onerror = () => reject(new Error('Failed to read file.'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function showLoading(show, message = '') {
+            DOM.loadingDiv.textContent = message;
+            DOM.loadingDiv.style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            DOM.errorDiv.textContent = message;
+            DOM.errorDiv.style.display = 'block';
+            setTimeout(clearError, 5000);
+        }
+
+        function clearError() {
+            DOM.errorDiv.textContent = '';
+            DOM.errorDiv.style.display = 'none';
+        }
+
+        function showToast(message) {
+            DOM.toastDiv.textContent = message;
+            DOM.toastDiv.style.display = 'block';
+            setTimeout(() => {
+                DOM.toastDiv.style.display = 'none';
+                DOM.toastDiv.textContent = '';
+            }, 3000);
+        }
+
+        // Clipboard.js event listeners
+        clipboard.on('success', (e) => {
+            const btn = e.trigger;
+            btn.textContent = 'Copied';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = 'Copy';
+                btn.classList.remove('copied');
+            }, 2000);
+            showToast('Text copied to clipboard!');
+            e.clearSelection();
+        });
+
+        clipboard.on('error', (e) => {
+            showError('Failed to copy text. Please try again.');
+        });
+    </script>
+</body>
+</html>
